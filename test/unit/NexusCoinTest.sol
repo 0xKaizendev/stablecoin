@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {Test} from "forge-std/Test.sol";
-import {NexusCoin} from "../../src/NexusCoin.sol";
-import {StdCheats} from "forge-std/StdCheats.sol";
+import { Test } from "forge-std/Test.sol";
+import { NexusCoin } from "../../src/NexusCoin.sol";
+import { StdCheats } from "forge-std/StdCheats.sol";
 
 contract NexusCoinTest is Test {
     NexusCoin public nexusCoin;
@@ -165,9 +165,7 @@ contract NexusCoinTest is Test {
     // Custom error tests with specific error matching
     function testBurnAmountMustBeGreaterThanZeroError() public {
         vm.prank(nexusCoin.owner());
-        vm.expectRevert(
-            NexusCoin.NexusCoin__BurnAmountMustBeGreaterThanZero.selector
-        );
+        vm.expectRevert(NexusCoin.NexusCoin__BurnAmountMustBeGreaterThanZero.selector);
         nexusCoin.burn(0);
     }
 
@@ -187,9 +185,7 @@ contract NexusCoinTest is Test {
 
     function testMintAmountMustBeGreaterThanZeroError() public {
         vm.prank(nexusCoin.owner());
-        vm.expectRevert(
-            NexusCoin.NexusCoin__MintAmountMustBeGreaterThanZero.selector
-        );
+        vm.expectRevert(NexusCoin.NexusCoin__MintAmountMustBeGreaterThanZero.selector);
         nexusCoin.mint(address(this), 0);
     }
 

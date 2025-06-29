@@ -4,8 +4,8 @@
 pragma solidity ^0.8.20;
 
 //imports
-import {ERC20, ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import { ERC20, ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 // errors
 // interfaces,libraries,contracts
@@ -31,15 +31,15 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 @dev Collateral : Exogenous (wETH, wBTC)
 @dev Stability Mechanism : Algorithmic (Decentralized)
 @dev Relative Stability : Pegged to the US Dollar
-@notice this contract is meant to be governed by NexusEngine. The contract is just the ERC20 implementation of our stablecoin.
-*/
+@notice this contract is meant to be governed by NexusEngine. The contract is just the ERC20 implementation of our
+stablecoin.*/
 contract NexusCoin is ERC20Burnable, Ownable {
     error NexusCoin__BurnAmountExceedsBalance();
     error NexusCoin__BurnAmountMustBeGreaterThanZero();
     error NexusCoin__MintToZeroAddress();
     error NexusCoin__MintAmountMustBeGreaterThanZero();
 
-    constructor() ERC20("NexusCoin", "NEX") Ownable(msg.sender) {}
+    constructor() ERC20("NexusCoin", "NEX") Ownable(msg.sender) { }
 
     function burn(uint256 _amount) public override onlyOwner {
         uint256 balance = balanceOf(msg.sender);
@@ -66,6 +66,4 @@ contract NexusCoin is ERC20Burnable, Ownable {
         _mint(_to, _amount);
         return true;
     }
-
- 
 }
