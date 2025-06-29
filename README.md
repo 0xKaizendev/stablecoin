@@ -1,66 +1,193 @@
-## Foundry
+# Stablecoin Project
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+A decentralized stablecoin implementation built with Solidity and Foundry,
+featuring algorithmic stability mechanisms and exogenous crypto collateral.
 
-Foundry consists of:
+## Overview
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+This project implements a stablecoin system with the following key
+characteristics:
 
-## Documentation
+- **🎯 Relative Stability**: Pegged to the US Dollar using Chainlink Price Feeds
+- **⚙️ Algorithmic Stability**: Decentralized minting and burning mechanism
+- **🔒 Exogenous Collateral**: Backed by cryptocurrency assets (wETH, wBTC)
 
-https://book.getfoundry.sh/
+## Features
+
+### Core Mechanisms
+
+1. **Price Stability**
+   - Chainlink Price Feeds integration for accurate USD pricing
+   - Exchange functions for ETH & BTC to stablecoin conversion
+2. **Collateral Management**
+   - Over-collateralization requirement for minting
+   - Support for Wrapped Ethereum (wETH)
+   - Support for Wrapped Bitcoin (wBTC)
+3. **Algorithmic Controls**
+   - Automated minting based on collateral ratios
+   - Burning mechanism to maintain peg stability
+   - Liquidation system for under-collateralized positions
+
+## Prerequisites
+
+- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- [Foundry](https://getfoundry.sh/)
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd stablecoin
+```
+
+2. Install dependencies:
+
+```bash
+forge install
+```
+
+3. Build the project:
+
+```bash
+forge build
+```
 
 ## Usage
 
-### Build
+### Testing
 
-```shell
-$ forge build
+Run the test suite:
+
+```bash
+forge test
 ```
 
-### Test
+Run tests with verbosity:
 
-```shell
-$ forge test
+```bash
+forge test -vvv
 ```
 
-### Format
+### Deployment
 
-```shell
-$ forge fmt
+Deploy to local network:
+
+```bash
+anvil
+```
+
+In a new terminal:
+
+```bash
+forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --private-key <private-key> --broadcast
 ```
 
 ### Gas Snapshots
 
-```shell
-$ forge snapshot
+```bash
+forge snapshot
 ```
 
-### Anvil
+### Format Code
 
-```shell
-$ anvil
+```bash
+forge fmt
 ```
 
-### Deploy
+## Architecture
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+```
+src/
+├── StableCoin.sol          # Main stablecoin contract
+├── StableCoinEngine.sol    # Core stability mechanisms
+├── libraries/
+│   ├── OracleLib.sol       # Chainlink price feed integration
+│   └── ReentrancyGuard.sol # Security implementations
+└── interfaces/
+    ├── IERC20.sol          # Token interface
+    └── AggregatorV3Interface.sol # Chainlink interface
 ```
 
-### Cast
+## Smart Contract Design
 
-```shell
-$ cast <subcommand>
-```
+### Key Components
 
-### Help
+- **StableCoin**: ERC20 token implementation with mint/burn controls
+- **StableCoinEngine**: Core logic for collateral management and stability
+- **Price Oracles**: Chainlink integration for real-time price feeds
+- **Collateral Tokens**: Support for wETH and wBTC as backing assets
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+### Security Features
+
+- Reentrancy protection
+- Access control mechanisms
+- Liquidation safety checks
+- Price feed validation
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Guidelines
+
+- Follow Solidity style guide
+- Ensure all tests pass
+- Add tests for new features
+- Update documentation as needed
+
+## Testing
+
+The project uses Foundry's testing framework with the following test categories:
+
+- **Unit Tests**: Individual contract function testing
+- **Integration Tests**: Multi-contract interaction testing
+- **Fuzz Tests**: Property-based testing with random inputs
+- **Invariant Tests**: System-wide property verification
+
+## Deployment Networks
+
+| Network          | Contract Address | Status         |
+| ---------------- | ---------------- | -------------- |
+| Ethereum Mainnet | TBD              | Planned        |
+| Sepolia Testnet  | TBD              | In Development |
+| Local (Anvil)    | Dynamic          | Development    |
+
+## Risk Considerations
+
+⚠️ **Important**: This is experimental software. Use at your own risk.
+
+- Smart contract risk
+- Collateral volatility risk
+- Oracle failure risk
+- Liquidation risk
+- Regulatory risk
+
+## Resources
+
+- [Foundry Documentation](https://book.getfoundry.sh/)
+- [Chainlink Price Feeds](https://docs.chain.link/data-feeds/price-feeds)
+- [OpenZeppelin Contracts](https://docs.openzeppelin.com/contracts/)
+- [Ethereum Development](https://ethereum.org/en/developers/)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
+for details.
+
+## Acknowledgments
+
+- OpenZeppelin for security implementations
+- Chainlink for price feed infrastructure
+- Foundry team for the development framework
+- Ethereum community for DeFi innovations
+
+---
+
+**⚠️ Disclaimer**: This software is provided "as is" without warranty. Always
+perform due diligence and consider professional audit before production use.
