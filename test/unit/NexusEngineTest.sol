@@ -1,29 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {Test} from "forge-std/Test.sol";
-import {NexusCoin} from "../../src/NexusCoin.sol";
-import {NexusEngine} from "../../src/NexusEngine.sol";
+import { Test } from "forge-std/Test.sol";
+import { NexusCoin } from "../../src/NexusCoin.sol";
+import { NexusEngine } from "../../src/NexusEngine.sol";
 
-import {StdCheats} from "forge-std/StdCheats.sol";
-import {DeployNEX} from "../../script/DeployNEX.s.sol";
-import {HelperConfig} from "../../script/HelperConfig.s.sol";
-import {ERC20Mock} from "../mocks/ERC20Mock.sol";
-import {MockV3Aggregator} from "../mocks/MockV3Aggregator.sol";
-import {MockMoreDebtNEX} from "../mocks/MockMoreDebtNEX.sol";
-import {MockFailedMintNEX} from "../mocks/MockFailedMintNEX.sol";
-import {MockFailedTransferFrom} from "../mocks/MockFailedTransferFrom.sol";
-import {MockFailedTransfer} from "../mocks/MockFailedTransfer.sol";
-import {Test, console} from "forge-std/Test.sol";
-import {StdCheats} from "forge-std/StdCheats.sol";
+import { StdCheats } from "forge-std/StdCheats.sol";
+import { DeployNEX } from "../../script/DeployNEX.s.sol";
+import { HelperConfig } from "../../script/HelperConfig.s.sol";
+import { ERC20Mock } from "../mocks/ERC20Mock.sol";
+import { MockV3Aggregator } from "../mocks/MockV3Aggregator.sol";
+import { MockMoreDebtNEX } from "../mocks/MockMoreDebtNEX.sol";
+import { MockFailedMintNEX } from "../mocks/MockFailedMintNEX.sol";
+import { MockFailedTransferFrom } from "../mocks/MockFailedTransferFrom.sol";
+import { MockFailedTransfer } from "../mocks/MockFailedTransfer.sol";
+import { Test, console } from "forge-std/Test.sol";
+import { StdCheats } from "forge-std/StdCheats.sol";
 
 contract NexusEngineTest is Test {
-    event CollateralRedeemed(
-        address indexed redeemFrom,
-        address indexed redeemTo,
-        address token,
-        uint256 amount
-    );
+    event CollateralRedeemed(address indexed redeemFrom, address indexed redeemTo, address token, uint256 amount);
 
     NexusEngine public nexe;
     NexusCoin public nex;
@@ -48,13 +43,7 @@ contract NexusEngineTest is Test {
     function setUp() external {
         DeployNEX deployer = new DeployNEX();
         (nex, nexe, helperConfig) = deployer.run();
-        (
-            ethUsdPriceFeed,
-            btcUsdPriceFeed,
-            weth,
-            wbtc,
-            deployerKey
-        ) = helperConfig.activeNetworkConfig();
+        (ethUsdPriceFeed, btcUsdPriceFeed, weth, wbtc, deployerKey) = helperConfig.activeNetworkConfig();
         if (block.chainid == 31_337) {
             vm.deal(user, STARTING_USER_BALANCE);
         }
@@ -83,11 +72,7 @@ contract NexusEngineTest is Test {
         feedAddresses.push(ethUsdPriceFeed);
         feedAddresses.push(btcUsdPriceFeed);
 
-        vm.expectRevert(
-            NexusEngine
-                .NexusEngine__TokenAddressesAndPriceFeedAddressesAmountsDontMatch
-                .selector
-        );
+        vm.expectRevert(NexusEngine.NexusEngine__TokenAddressesAndPriceFeedAddressesAmountsDontMatch.selector);
         new NexusEngine(tokenAddresses, feedAddresses, address(nex));
     }
 
@@ -114,23 +99,13 @@ contract NexusEngineTest is Test {
         feedAddresses = [ethUsdPriceFeed];
         // DSCEngine receives the third parameter as dscAddress, not the tokenAddress used as collateral.
         vm.prank(owner);
-        NexusEngine mockDsce = new NexusEngine(
-            tokenAddresses,
-            feedAddresses,
-            address(nex)
-        );
+        NexusEngine mockDsce = new NexusEngine(tokenAddresses, feedAddresses, address(nex));
         mockCollateralToken.mint(user, amountCollateral);
         vm.startPrank(user);
-        ERC20Mock(address(mockCollateralToken)).approve(
-            address(mockDsce),
-            amountCollateral
-        );
+        ERC20Mock(address(mockCollateralToken)).approve(address(mockDsce), amountCollateral);
         // Act / Assert
         vm.expectRevert(NexusEngine.NexusEngine__TransferFailed.selector);
-        mockDsce.depositCollateral(
-            address(mockCollateralToken),
-            amountCollateral
-        );
+        mockDsce.depositCollateral(address(mockCollateralToken), amountCollateral);
         vm.stopPrank();
     }
 
@@ -146,12 +121,7 @@ contract NexusEngineTest is Test {
     function testRevertsWithUnapprovedCollateral() public {
         ERC20Mock randToken = new ERC20Mock("RAN", "RAN", user, 100e18);
         vm.startPrank(user);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                NexusEngine.NexusEngine__TokenNotAllowed.selector,
-                address(randToken)
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(NexusEngine.NexusEngine__TokenNotAllowed.selector, address(randToken)));
         nexe.depositCollateral(address(randToken), amountCollateral);
         vm.stopPrank();
     }
@@ -164,24 +134,14 @@ contract NexusEngineTest is Test {
         _;
     }
 
-    function testCanDepositCollateralWithoutMinting()
-        public
-        depositedCollateral
-    {
+    function testCanDepositCollateralWithoutMinting() public depositedCollateral {
         uint256 userBalance = nex.balanceOf(user);
         assertEq(userBalance, 0);
     }
 
-    function testCanDepositedCollateralAndGetAccountInfo()
-        public
-        depositedCollateral
-    {
-        (uint256 totalNexMinted, uint256 collateralValueInUsd) = nexe
-            .getAccountInformation(user);
-        uint256 expectedDepositedAmount = nexe.getTokenAmountFromUsd(
-            weth,
-            collateralValueInUsd
-        );
+    function testCanDepositedCollateralAndGetAccountInfo() public depositedCollateral {
+        (uint256 totalNexMinted, uint256 collateralValueInUsd) = nexe.getAccountInformation(user);
+        uint256 expectedDepositedAmount = nexe.getTokenAmountFromUsd(weth, collateralValueInUsd);
         assertEq(totalNexMinted, 0);
         assertEq(expectedDepositedAmount, amountCollateral);
     }
@@ -191,24 +151,15 @@ contract NexusEngineTest is Test {
     ///////////////////////////////////////
 
     function testRevertsIfMintedDscBreaksHealthFactor() public {
-        (, int256 price, , , ) = MockV3Aggregator(ethUsdPriceFeed)
-            .latestRoundData();
-        amountToMint =
-            (amountCollateral *
-                (uint256(price) * nexe.getAdditionalFeedPrecision())) /
-            nexe.getPrecision();
+        (, int256 price,,,) = MockV3Aggregator(ethUsdPriceFeed).latestRoundData();
+        amountToMint = (amountCollateral * (uint256(price) * nexe.getAdditionalFeedPrecision())) / nexe.getPrecision();
         vm.startPrank(user);
         ERC20Mock(weth).approve(address(nexe), amountCollateral);
 
-        uint256 expectedHealthFactor = nexe.calculateHealthFactor(
-            amountToMint,
-            nexe.getUsdValue(weth, amountCollateral)
-        );
+        uint256 expectedHealthFactor =
+            nexe.calculateHealthFactor(amountToMint, nexe.getUsdValue(weth, amountCollateral));
         vm.expectRevert(
-            abi.encodeWithSelector(
-                NexusEngine.NexusEngine__BreaksHealthFactor.selector,
-                expectedHealthFactor
-            )
+            abi.encodeWithSelector(NexusEngine.NexusEngine__BreaksHealthFactor.selector, expectedHealthFactor)
         );
         nexe.depositCollateralAndMintNex(weth, amountCollateral, amountToMint);
         vm.stopPrank();
@@ -222,17 +173,15 @@ contract NexusEngineTest is Test {
         _;
     }
 
-    function testCanMintWithDepositedCollateral()
-        public
-        depositedCollateralAndMintedDsc
-    {
+    function testCanMintWithDepositedCollateral() public depositedCollateralAndMintedDsc {
         uint256 userBalance = nex.balanceOf(user);
         assertEq(userBalance, amountToMint);
     }
-      ///////////////////////////////////
+    ///////////////////////////////////
     // mintDsc Tests //
     ///////////////////////////////////
     // This test needs it's own custom setup
+
     function testRevertsIfMintFails() public {
         // Arrange - Setup
         MockFailedMintNEX mockDsc = new MockFailedMintNEX();
@@ -269,7 +218,9 @@ contract NexusEngineTest is Test {
         vm.startPrank(user);
         uint256 expectedHealthFactor =
             nexe.calculateHealthFactor(amountToMint, nexe.getUsdValue(weth, amountCollateral));
-        vm.expectRevert(abi.encodeWithSelector(NexusEngine.NexusEngine__BreaksHealthFactor.selector, expectedHealthFactor));
+        vm.expectRevert(
+            abi.encodeWithSelector(NexusEngine.NexusEngine__BreaksHealthFactor.selector, expectedHealthFactor)
+        );
         nexe.mintNex(amountToMint);
         vm.stopPrank();
     }
