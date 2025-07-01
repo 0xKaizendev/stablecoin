@@ -20,12 +20,12 @@ contract DeployNEX is Script {
 
         vm.startBroadcast(deployerKey);
 
-        NexusCoin nexusCoin = new NexusCoin();
-        NexusEngine nexusEngine = new NexusEngine(tokenAddresses, priceFeedAddresses, address(nexusCoin));
-        nexusCoin.transferOwnership(address(nexusEngine));
+        NexusCoin nex = new NexusCoin();
+        NexusEngine nexe = new NexusEngine(tokenAddresses, priceFeedAddresses, address(nex));
+        nex.transferOwnership(address(nexe));
 
         vm.stopBroadcast();
 
-        return (nexusCoin, nexusEngine, helperConfig);
+        return (nex, nexe, helperConfig);
     }
 }
